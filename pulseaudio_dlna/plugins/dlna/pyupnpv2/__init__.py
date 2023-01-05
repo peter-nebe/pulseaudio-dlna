@@ -238,9 +238,14 @@ class UpnpService(object):
 
         self._request = request or requests
         self._service_type = service['service_type']
-        self._control_url = self._ensure_absolute_url(service['control_url'])
-        self._event_url = self._ensure_absolute_url(service['eventsub_url'])
-        self._scpd_url = self._ensure_absolute_url(service['scpd_url'])
+# hack for DMP-BDT500
+#        self._control_url = self._ensure_absolute_url(service['control_url'])
+#        self._event_url = self._ensure_absolute_url(service['eventsub_url'])
+#        self._scpd_url = self._ensure_absolute_url(service['scpd_url'])
+        self._control_url = service['control_url']
+        self._event_url = service['eventsub_url']
+        self._scpd_url = service['scpd_url']
+# end of hack
 
         self._update_supported_actions()
 
@@ -432,16 +437,19 @@ class UpnpAVTransportService(UpnpService):
     def set_av_transport_uri(
             self, stream_url, mime_type=None, artist=None, title=None,
             thumb=None, content_features=None, instance_id='0'):
-        metadata = self._generate_didl_xml(
-            title=title or '',
-            creator='',
-            artist=artist or '',
-            album_art=thumb or '',
-            album='',
-            protocol_info='http-get:*:{}:{}'.format(
-                mime_type, str(content_features or self.content_features)),
-            stream_url=stream_url,
-        )
+# hack for DMP-BDT500
+#        metadata = self._generate_didl_xml(
+#            title=title or '',
+#            creator='',
+#            artist=artist or '',
+#            album_art=thumb or '',
+#            album='',
+#            protocol_info='http-get:*:{}:{}'.format(
+#                mime_type, str(content_features or self.content_features)),
+#            stream_url=stream_url,
+#        )
+        metadata = '<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"><item><upnp:class>object.item.audioItem.musicTrack</upnp:class><res protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3">' + stream_url + '</res></item></DIDL-Lite>'
+# end of hack
         return self._execute_action(
             'SetAVTransportURI', collections.OrderedDict([
                 ('InstanceID', instance_id),
