@@ -53,11 +53,11 @@ As you can see, the service URLs are absolute and start with *http*. Therefore t
 "DMP-BDT500 (DLNA)" : The action "GetProtocolInfo" is not supported!
 The device "DMP-BDT500 (DLNA)" failed to play! (500) - "DMP-BDT500 (DLNA)" : Could not find a suitable encoder!
 ```
-or, with *--disable-mimetype-check* option:
+or, with the *--disable-mimetype-check* option:
 ```
 The device "DMP-BDT500 (DLNA)" failed to play! (500) - "DMP-BDT500 (DLNA)" : The action "SetAVTransportURI" is not supported!
 ```
-The hack is to use the URLs directly.
+The [hack](pulseaudio_dlna/plugins/dlna/pyupnpv2/__init__.py#L241) is to use the URLs directly.
 
 ### 2nd Problem
 If the first problem is solved and *GetProtocolInfo* works, it returns the following info for MP3:
@@ -87,4 +87,4 @@ In debug mode you can see the player's response:
 ```
 The *--disable-mimetype-check* option does not help in this case. It is also not enough to correctly include the part *DLNA.ORG_PN=MP3* in the metadata that pulseaudio-dlna sends.
 
-Luckily I found another tool that allowed me to stream MP3 audio to this player: GUPnP AV Control Point. Wireshark showed me that this tool sends different metadata to the player. This led to the 2nd hack: pulseaudio-dlna only sends the absolutely necessary metadata to the player. Unfortunately, this only works for the DMP-BDT500 and only with MP3.
+Luckily I found another tool that allowed me to stream MP3 audio to this player: GUPnP AV Control Point. Viewing the traffic with Wireshark showed me that the GUPnP tool sends different metadata to the player. This led to the [2nd hack](pulseaudio_dlna/plugins/dlna/pyupnpv2/__init__.py#L440): pulseaudio-dlna only sends the absolutely necessary metadata to the player. That works, but unfortunately only for the DMP-BDT500 and only with MP3.
